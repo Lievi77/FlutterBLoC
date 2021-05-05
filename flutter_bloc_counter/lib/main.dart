@@ -51,60 +51,58 @@ class _MyHomePageState extends State<MyHomePage> {
         title: Text(widget.title),
       ),
       // ! Need to specify cubit and  state
-      body: BlocListener<CounterCubit, CounterState>(
-        listener: (context, state) {
-          if (state.wasIncremented) {
-            // * Do something when incremented
-            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-              content: Text("I was Incremented"),
-              duration: Duration(milliseconds: 50),
-            ));
-          } else {
-            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-              content: Text("I was Decremented"),
-              duration: Duration(milliseconds: 50),
-            ));
-          }
-        },
-        child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              Text(
-                'You have pushed the button this many times:',
-              ),
-              BlocBuilder<CounterCubit, CounterState>(
-                  // ! But how do we update the UI to reflect the Cubit's state change?
-                  //! A: BlocBuilder!
-                  builder: (context, state) => Text(
-                      state.counterValue.toString(),
-                      style: Theme.of(context).textTheme.headline4)),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  FloatingActionButton(
-                    onPressed: () {
-                      //! No need to instantiate a new Cubit, CubitProvider at the
-                      // ! Parent widget provides an instance
-                      // !! ALWAYS SPECIFY THE TYPE OF CUBIT
-                      BlocProvider.of<CounterCubit>(context).decrement();
+      // !!!! But is there a way to simplify BlocListener and BlocBuilder?
+      // !!!! The code clutter is a lot!!! A: Yes, we can use BlocConsumer
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Text(
+              'You have pushed the button this many times:',
+            ),
+            // ! But how do we update the UI to reflect the Cubit's state change?
+            //! A: BlocBuilder!
+            BlocConsumer<CounterCubit, CounterState>(
+                listener: (context, state) {
+                  if (state.wasIncremented) {
+                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                      content: Text("Increased!"),
+                      duration: Duration(milliseconds: 40),
+                    ));
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                      content: Text("Decreased!"),
+                      duration: Duration(milliseconds: 40),
+                    ));
+                  }
+                },
+                builder: (context, state) => Text(state.counterValue.toString(),
+                    style: Theme.of(context).textTheme.headline4)),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                FloatingActionButton(
+                  onPressed: () {
+                    //! No need to instantiate a new Cubit, CubitProvider at the
+                    // ! Parent widget provides an instance
+                    // !! ALWAYS SPECIFY THE TYPE OF CUBIT
+                    BlocProvider.of<CounterCubit>(context).decrement();
 
-                      // ? Alternate Syntax: context.bloc<CounterCubit>().decrement();
-                    },
-                    tooltip: 'Decrement',
-                    child: Icon(Icons.remove),
-                  ),
-                  FloatingActionButton(
-                    onPressed: () {
-                      BlocProvider.of<CounterCubit>(context).increment();
-                    },
-                    tooltip: 'Increment',
-                    child: Icon(Icons.add),
-                  )
-                ],
-              )
-            ],
-          ),
+                    // ? Alternate Syntax: context.bloc<CounterCubit>().decrement();
+                  },
+                  tooltip: 'Decrement',
+                  child: Icon(Icons.remove),
+                ),
+                FloatingActionButton(
+                  onPressed: () {
+                    BlocProvider.of<CounterCubit>(context).increment();
+                  },
+                  tooltip: 'Increment',
+                  child: Icon(Icons.add),
+                )
+              ],
+            )
+          ],
         ),
       ),
     );
