@@ -1,6 +1,6 @@
-# flutter_bloc_concepts
+# flutter_bloc_counter
 
-A new Flutter project.
+Practicing Flutter BLoC
 
 ## Getting Started
 

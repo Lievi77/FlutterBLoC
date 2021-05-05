@@ -1,22 +1,24 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'dart:developer';
 
-import 'cubit/counter_cubit.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc_counter/cubit/counter_cubit.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 void main() {
   runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
+  //! This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return BlocProvider<CounterCubit>(
+    return BlocProvider(
       create: (context) => CounterCubit(),
       child: MaterialApp(
+        // Notice that a Cubit/Bloc is not available for the root Widget.
         title: 'Flutter Demo',
         theme: ThemeData(
           primarySwatch: Colors.blue,
-          visualDensity: VisualDensity.adaptivePlatformDensity,
         ),
         home: MyHomePage(title: 'Flutter Demo Home Page'),
       ),
@@ -34,12 +36,23 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  int _counter = 0;
+
+  void _incrementCounter() {
+    setState(() {
+      _counter++;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
       ),
+      // ! Need to specify cubit and  state
+      // !!!! But is there a way to simplify BlocListener and BlocBuilder?
+      // !!!! The code clutter is a lot!!! A: Yes, we can use BlocConsumer
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -47,71 +60,48 @@ class _MyHomePageState extends State<MyHomePage> {
             Text(
               'You have pushed the button this many times:',
             ),
+            // ! But how do we update the UI to reflect the Cubit's state change?
+            //! A: BlocBuilder!
             BlocConsumer<CounterCubit, CounterState>(
-              listener: (context, state) {
-                if (state.wasIncremented == true) {
-                  Scaffold.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text('Incremented!'),
-                      duration: Duration(milliseconds: 300),
-                    ),
-                  );
-                } else if (state.wasIncremented == false) {
-                  Scaffold.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text('Decremented!'),
-                      duration: Duration(milliseconds: 300),
-                    ),
-                  );
-                }
-              },
-              builder: (context, state) {
-                if (state.counterValue < 0) {
-                  return Text(
-                    'BRR, NEGATIVE ' + state.counterValue.toString(),
-                    style: Theme.of(context).textTheme.headline4,
-                  );
-                } else if (state.counterValue % 2 == 0) {
-                  return Text(
-                    'YAAAY ' + state.counterValue.toString(),
-                    style: Theme.of(context).textTheme.headline4,
-                  );
-                } else if (state.counterValue == 5) {
-                  return Text(
-                    'HMM, NUMBER 5',
-                    style: Theme.of(context).textTheme.headline4,
-                  );
-                } else
-                  return Text(
-                    state.counterValue.toString(),
-                    style: Theme.of(context).textTheme.headline4,
-                  );
-              },
-            ),
-            SizedBox(
-              height: 24,
-            ),
+                listener: (context, state) {
+                  if (state.wasIncremented) {
+                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                      content: Text("Increased!"),
+                      duration: Duration(milliseconds: 40),
+                    ));
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                      content: Text("Decreased!"),
+                      duration: Duration(milliseconds: 40),
+                    ));
+                  }
+                },
+                builder: (context, state) => Text(state.counterValue.toString(),
+                    style: Theme.of(context).textTheme.headline4)),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 FloatingActionButton(
                   onPressed: () {
+                    //! No need to instantiate a new Cubit, CubitProvider at the
+                    // ! Parent widget provides an instance
+                    // !! ALWAYS SPECIFY THE TYPE OF CUBIT
                     BlocProvider.of<CounterCubit>(context).decrement();
-                    // context.bloc<CounterCubit>().decrement();
+
+                    // ? Alternate Syntax: context.bloc<CounterCubit>().decrement();
                   },
                   tooltip: 'Decrement',
                   child: Icon(Icons.remove),
                 ),
                 FloatingActionButton(
                   onPressed: () {
-                    // BlocProvider.of<CounterCubit>(context).increment();
-                    context.bloc<CounterCubit>().increment();
+                    BlocProvider.of<CounterCubit>(context).increment();
                   },
                   tooltip: 'Increment',
                   child: Icon(Icons.add),
-                ),
+                )
               ],
-            ),
+            )
           ],
         ),
       ),

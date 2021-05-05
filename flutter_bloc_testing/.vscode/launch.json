@@ -5,7 +5,7 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "flutter_bloc_concepts",
+            "name": "flutter_bloc_counter",
             "request": "launch",
             "type": "dart"
         }
