@@ -50,50 +50,63 @@ class _MyHomePageState extends State<MyHomePage> {
       appBar: AppBar(
         title: Text(widget.title),
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Text(
-              'You have pushed the button this many times:',
-            ),
-            BlocBuilder<CounterCubit, CounterState>(
-                // ! But how do we update the UI to reflect the Cubit's state change?
-                //! A: BlocBuilder!
-                builder: (context, state) => Text(state.counterValue.toString(),
-                    style: Theme.of(context).textTheme.headline4)),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                FloatingActionButton(
-                  onPressed: () {
-                    //! No need to instantiate a new Cubit, CubitProvider at the
-                    // ! Parent widget provides an instance
-                    // !! ALWAYS SPECIFY THE TYPE OF CUBIT
-                    BlocProvider.of<CounterCubit>(context).decrement();
+      // ! Need to specify cubit and  state
+      body: BlocListener<CounterCubit, CounterState>(
+        listener: (context, state) {
+          if (state.wasIncremented) {
+            // * Do something when incremented
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+              content: Text("I was Incremented"),
+              duration: Duration(milliseconds: 50),
+            ));
+          } else {
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+              content: Text("I was Decremented"),
+              duration: Duration(milliseconds: 50),
+            ));
+          }
+        },
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Text(
+                'You have pushed the button this many times:',
+              ),
+              BlocBuilder<CounterCubit, CounterState>(
+                  // ! But how do we update the UI to reflect the Cubit's state change?
+                  //! A: BlocBuilder!
+                  builder: (context, state) => Text(
+                      state.counterValue.toString(),
+                      style: Theme.of(context).textTheme.headline4)),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  FloatingActionButton(
+                    onPressed: () {
+                      //! No need to instantiate a new Cubit, CubitProvider at the
+                      // ! Parent widget provides an instance
+                      // !! ALWAYS SPECIFY THE TYPE OF CUBIT
+                      BlocProvider.of<CounterCubit>(context).decrement();
 
-                    // ? Alternate Syntax: context.bloc<CounterCubit>().decrement();
-                  },
-                  tooltip: 'Decrement',
-                  child: Icon(Icons.remove),
-                ),
-                FloatingActionButton(
-                  onPressed: () {
-                    BlocProvider.of<CounterCubit>(context).increment();
-                  },
-                  tooltip: 'Increment',
-                  child: Icon(Icons.add),
-                )
-              ],
-            )
-          ],
+                      // ? Alternate Syntax: context.bloc<CounterCubit>().decrement();
+                    },
+                    tooltip: 'Decrement',
+                    child: Icon(Icons.remove),
+                  ),
+                  FloatingActionButton(
+                    onPressed: () {
+                      BlocProvider.of<CounterCubit>(context).increment();
+                    },
+                    tooltip: 'Increment',
+                    child: Icon(Icons.add),
+                  )
+                ],
+              )
+            ],
+          ),
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
 }
