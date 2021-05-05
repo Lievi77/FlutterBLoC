@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc_counter/cubit/counter_cubit.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -55,19 +57,30 @@ class _MyHomePageState extends State<MyHomePage> {
             Text(
               'You have pushed the button this many times:',
             ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headline4,
-            ),
+            BlocBuilder<CounterCubit, CounterState>(
+                // ! But how do we update the UI to reflect the Cubit's state change?
+                //! A: BlocBuilder!
+                builder: (context, state) => Text(state.counterValue.toString(),
+                    style: Theme.of(context).textTheme.headline4)),
             Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 FloatingActionButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    //! No need to instantiate a new Cubit, CubitProvider at the
+                    // ! Parent widget provides an instance
+                    // !! ALWAYS SPECIFY THE TYPE OF CUBIT
+                    BlocProvider.of<CounterCubit>(context).decrement();
+
+                    // ? Alternate Syntax: context.bloc<CounterCubit>().decrement();
+                  },
                   tooltip: 'Decrement',
                   child: Icon(Icons.remove),
                 ),
                 FloatingActionButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    BlocProvider.of<CounterCubit>(context).increment();
+                  },
                   tooltip: 'Increment',
                   child: Icon(Icons.add),
                 )
