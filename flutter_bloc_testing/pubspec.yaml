@@ -12,10 +12,11 @@ dependencies:
   flutter:
     sdk: flutter
   bloc: ^7.0.0
-  bloc_test: 
+  bloc_test: null
   cupertino_icons: ^1.0.3
+  equatable: ^2.0.0
   flutter_bloc: ^7.0.0
-  test: 
+  test: null
 
 dev_dependencies:
   flutter_test:
