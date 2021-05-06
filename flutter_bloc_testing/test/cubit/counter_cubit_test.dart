@@ -34,6 +34,7 @@ main() {
       //! Since two diff instances are stored in diff parts of the memory, they are
       //! not equal in dart's view.
       //* To override this behaviour, use the EQUATABLE package
+      //! On CounterState.dart, extend the Equatable class
       expect(counterCubit.state, CounterState(counterValue: 0));
     });
 
