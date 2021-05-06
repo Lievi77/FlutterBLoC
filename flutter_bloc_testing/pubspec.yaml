@@ -1,8 +1,7 @@
-name: flutter_bloc_counter
+name: flutter_bloc_testing
 description: Practicing Flutter BLoC
 
-publish_to: 'none'
-
+publish_to: "none"
 
 version: 1.0.0+1
 
@@ -12,18 +11,15 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-
-
-  cupertino_icons: ^1.0.3
   bloc: ^7.0.0
+  bloc_test: 
+  cupertino_icons: ^1.0.3
   flutter_bloc: ^7.0.0
+  test: 
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
 
 flutter:
-
   uses-material-design: true
-
-
